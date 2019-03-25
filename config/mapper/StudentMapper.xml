@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.edu.dao.StudentMapper">
+
+	<!-- 查询所有数据 -->
+	<select id="findAll" resultType="com.edu.domain.Student">
+		SELECT 	id, 
+			NAME, 
+			gender,
+			classes,
+			number, 
+			telephone, 
+			achievement
+			FROM 
+		edu.student 
+	</select>
+	
+	<!-- 添加商品 -->
+	<insert id="save" parameterType="com.edu.domain.Student">
+		INSERT INTO edu.student 
+			( 
+			NAME, 
+			gender,
+			classes,
+			number, 
+			telephone, 
+			achievement
+			)
+			VALUES
+			( 
+			#{name}, 
+			#{gender}, 
+			#{classes}, 
+			#{number}, 
+			#{telephone}, 
+			#{achievement}
+			)
+	</insert>
+	
+	<!-- 根据id查询对象 -->
+	<select id="findById" parameterType="int" resultType="com.edu.domain.Student">
+		SELECT 	id, 
+			NAME, 
+			gender,
+			classes,
+			number, 
+			telephone, 
+			achievement
+			FROM 
+		edu.student
+		    where id = #{value}
+	</select>
+	
+	<!-- 根据id修改数据 -->
+	<update id="update" parameterType="com.edu.domain.Student">
+		UPDATE edu.student 
+			SET
+			NAME = #{name} , 
+			gender = #{gender} , 
+			classes = #{classes} , 
+			number = #{number} , 
+			telephone = #{telephone} , 
+			achievement = #{achievement}
+		WHERE
+			id = #{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="Integer[]">
+	DELETE FROM edu.student 
+		<where>
+			id
+			<foreach collection="array" item="id" open="in (" close=")" separator=",">
+				#{id}			
+			</foreach>
+		</where>
+	</delete>
+	
+	<!-- 关联教师表 -->
+	<resultMap type="com.edu.domain.Student" id="studTeachResultMap">
+		<id column="id" property="id" />
+		<result column="name" property="name"/>
+		<result column="gender" property="gender"/>
+		<result column="classes" property="classes"/>
+		<result column="number" property="number"/>
+		<result column="telephone" property="telephone"/>
+		<result column="achievement" property="achievement"/>
+		<association property="teacher" javaType="com.edu.domain.Teacher">
+			<id column="teacher_id" property="id" />
+			<result column="name" property="name"/>
+			<result column="gender" property="gender"/>
+			<result column="classes" property="classes"/>
+			<result column="number" property="number"/>
+			<result column="telephone" property="telephone"/>
+		</association>
+	</resultMap>
+	
+	<select id="queryResultMap" resultMap="studTeachResultMap">
+		SELECT teacher.`gender`,teacher.`name`,student.* FROM student 
+		LEFT JOIN teacher ON teacher.`classes`=student.`classes`
+	</select>
+	
+</mapper>
